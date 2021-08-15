@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Web;
+using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Dispatcher;
 
@@ -10,9 +9,18 @@ namespace BordDirector.Alex.Agronik.Utilities
 {
     public class CustomHttpControllerSelector : IHttpControllerSelector
     {
+        private HttpConfiguration _config;
+
+        public IHttpControllerSelector PreviousSelector { get; set; }
+
+        public CustomHttpControllerSelector(HttpConfiguration configuration)
+        {
+            _config = configuration;
+        }
+
         public IDictionary<string, HttpControllerDescriptor> GetControllerMapping()
         {
-            throw new NotImplementedException();
+            return PreviousSelector?.GetControllerMapping();
         }
 
         public HttpControllerDescriptor SelectController(HttpRequestMessage request)
@@ -28,25 +36,22 @@ namespace BordDirector.Alex.Agronik.Utilities
             string customHeaderForVersion = "X-API-Version";
 
             if (request.Headers.Contains(customHeaderForVersion))
-            {
                 apiVersion = request.Headers.GetValues(customHeaderForVersion).FirstOrDefault();
+
+            switch (apiVersion)
+            {
+                case "2":
+                    controllerName = $"{controllerName}V2";
+                    break;
+                default:
+                    controllerName = $"{controllerName}V1";
+                    break;
             }
 
-            if (apiVersion == "1")
-            {
-                controllerName = controllerName + "V1";
-            }
-            else
-            {
-                controllerName = controllerName + "V2";
-            }
-            //
-            HttpControllerDescriptor controllerDescriptor;
             //check the value in controllers dictionary. TryGetValue is an efficient way to check the value existence
-            if (controllers.TryGetValue(controllerName, out controllerDescriptor))
-            {
+            if (controllers.TryGetValue(controllerName, out var controllerDescriptor))
                 return controllerDescriptor;
-            }
+            
             return null;
         }
     }
