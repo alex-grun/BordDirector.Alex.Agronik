@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using BordDirector.Alex.Agronik.Infra.Interfaces;
+using BordDirector.Alex.Agronik.Services.Reports;
 using BordDirector.Alex.Agronik.Services.Vehicles;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace BordDirector.Alex.Agronik.Services
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<VehicleServices>().As<IVehicleServices>().SingleInstance();
+            builder.RegisterType<ReportServices>().As<IReportServices>().SingleInstance();
         }
     }
 }

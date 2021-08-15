@@ -10,10 +10,13 @@ namespace BordDirector.Alex.Agronik.DB
     {
         public List<Vehicle> Vehicles { get; }
         public int VehiclesIndex { get; set; }
+        public List<Report> Reports { get; set; }
+        public int ReportsIndex { get; set; }
 
         public CustomDBContext()
         {
             Vehicles = new List<Vehicle>();
+            Reports = new List<Report>();
         }
     }
 }
